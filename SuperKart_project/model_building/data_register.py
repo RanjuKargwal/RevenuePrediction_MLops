@@ -1,26 +1,21 @@
+# Load the raw dataset
+import pandas as pd
 
 RAW_PATH = "SuperKart_project/data/SuperKart.csv"
-df = pd.read_csv(RAW_PATH)
+data = pd.read_csv(RAW_PATH)
 
-df.drop(columns=["Product_Id"], inplace=True)
-df.drop(columns=["Store_Id"], inplace=True)
-#removing identity column
+# Validate that the expected columns are present before registering it
+expected_columns = [
+    "Product_Id", "Product_Weight", "Product_Sugar_Content", "Product_Allocated_Area", "Product_Type",
+    "Product_MRP", "Store_Id", "Store_Establishment_Year", "Store_Size",
+     "Store_Location_City_Type", "Store_Type", "Product_Store_Sales_Total",
+]
+missing = [c for c in expected_columns if c not in df.columns]
+if missing:
+    raise ValueError(f"Dataset is missing expected columns: {missing}")
 
-#seperated target from features
-target = "Product_Store_Sales_Total"
-X = df.drop(columns=[target])
-y = df[target]
-
-#test train split with 20% test size
-Xtrain, Xtest, ytrain, ytest = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-
-Xtrain.to_csv("Xtrain.csv", index=False)
-Xtest.to_csv("Xtest.csv", index=False)
-ytrain.to_csv("ytrain.csv", index=False)
-ytest.to_csv("ytest.csv", index=False)
-
-print("Data prepared: train/test splits written.")
-print("Product_Store_Sales_Total distribution in train:")
-print(ytrain.value_counts())
+print("Dataset registered successfully.")
+print(f"Rows: {data.shape[0]}, Columns: {data.shape[1]}")
+print("Columns:", list(data.columns))
+print("Product_Store_Sales_Total distribution:")
+print(data["Product_Store_Sales_Total"].value_counts())
